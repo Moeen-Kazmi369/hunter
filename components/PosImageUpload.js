@@ -1,59 +1,65 @@
 'use client'
-import { useState } from 'react';
+import { UploadPosImage, addPos } from '@/features/services/services';
+import { useState,useEffect } from 'react';
 import { BsImages } from 'react-icons/bs';
 import { ImCross } from 'react-icons/im';
 import { TiTick } from 'react-icons/ti';
 
-const PosImageUpload = () => {
-  const [Tempimage, setTempImage] = useState(null);
-  const [image, setImage] = useState();
-
-  const handleImageChange = (event) => {
+const PosImageUpload = ({Pos}) => {
+  const [TempPosimage, setTempPosImage] = useState(null);
+  const [Posimage, setPosImage] = useState();
+  const[Data,setData]=useState();
+  const handlePosImageChange = (event) => {
     event.preventDefault();
+    console.log('Pos lan pr char');
     const selectedImage = event.target.files[0];
-    setImage(selectedImage);
-    setTempImage(URL.createObjectURL(selectedImage));
+    setPosImage(selectedImage);
+    setTempPosImage(URL.createObjectURL(selectedImage));
   };
 
-  const handleUpload = async (e) => {
-    e.preventDefault();
-    setTempImage(null);
+  const onSubmit = async (e) => {
+    setTempPosImage(null);
+    e.preventDefault()
+    if (!Posimage) return
 
-    if (image) {
-      const formData = new FormData();
-      formData.append('image', image);
-
-      try {
-        const response = await fetch('/api/upload', {
-          method: 'POST',
-          body: formData,
-        });
-
-        if (response.ok) {
-          const result = await response.json();
-          console.log('Image uploaded successfully:', result.imageUrl);
-          // Now you can use the imageUrl as needed
-        } else {
-          console.error('Error uploading image:', response.statusText);
-        }
-      } catch (error) {
-        console.error('Error uploading image:', error);
-      }
+    try {
+      const data = new FormData()
+      const imageName = `${Date.now()}pic.jpg`; // New image name based on count
+      data.set('file', Posimage, imageName);
+      setData({
+        post:Pos,
+        image:imageName,
+      });
+      const results=await UploadPosImage(data);
+      // handle the error
+      console.log(results);
+    } catch (e) {
+      // Handle errors here
+      console.error(e)
     }
-  };
+  }
+  const AddPos=async(e)=>{
+    e.preventDefault();
+    try {
+      const results= await addPos(Data);
+      console.log(results);
+    } catch (error) {
+      console.log(error);
+    }
+  }
   return (
-    <div>
-      <form onSubmit={handleUpload}>
-      <label htmlFor="image" className="upload-label">
+    <div className='flex justify-between w-full'>
+      <form onSubmit={onSubmit}>
+      <label htmlFor="Posimage" className="upload-label">
         <div className="upload-icon">
           {
-            Tempimage?(
+            TempPosimage?(
               <div className='flex'>
               <ImCross
               className='mt-2'
               onClick={(e)=>{
                 e.preventDefault();
-                setImage(null);
+                setTempPosImage(null);
               }}
               />
               <button type={'submit'}>
@@ -69,14 +75,14 @@ const PosImageUpload = () => {
         </div>
         <input
           type="file"
-          id="image"
+          id="Posimage"
           name='image'
           accept="image/*"
-          onChange={handleImageChange}
+          onChange={handlePosImageChange}
           style={{ display: 'none' }}
         />
-        {Tempimage ? (<div className='flex'>
-          <img src={Tempimage} alt="Uploaded" className="uploaded-image" />
+        {TempPosimage ? (<div className='flex'>
+          <img src={TempPosimage} alt="Uploaded" className="uploaded-image" />
           </div>
         ) : null}
       </label>
@@ -99,6 +105,14 @@ const PosImageUpload = () => {
           margin: 10px auto;
         }
       `}</style>
+      <div>
+      <button
+                onClick={AddPos}
+                className="px-2 py-1 rounded border-none bg-black text-white"
+              >
+                Post
+              </button>
+      </div>
     </div>
   );
 };

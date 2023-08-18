@@ -1,19 +1,19 @@
 'use client'
-import { useState } from 'react';
+import { UploadQuesImage, addQues } from '@/features/services/services';
+import { useState,useEffect } from 'react';
 import { BsImages } from 'react-icons/bs';
 import { ImCross } from 'react-icons/im';
 import { TiTick } from 'react-icons/ti';
-import { useGlobalState } from './GlobalStateProvider';
 
-const QuesImageUpload = () => {
+const QuesImageUpload = ({Ques,setQState}) => {
   const [Tempimage, setTempImage] = useState(null);
   const [image, setImage] = useState();
-  const{QuseImageUrl,setQuesImageUrl} =useGlobalState()
-
+  const[Data,setData]=useState()
   const handleImageChange = (event) => {
     event.preventDefault();
     const selectedImage = event.target.files[0];
     setImage(selectedImage);
+    console.log('Ques lan pr char');
     setTempImage(URL.createObjectURL(selectedImage));
   };
 
@@ -24,23 +24,31 @@ const QuesImageUpload = () => {
 
     try {
       const data = new FormData()
-      data.set('file', image)
-      setQuesImageUrl(image.name);
-      const res = await fetch('/api/upload', {
-        method: 'POST',
-        body: data
-      })
+      const imageName = `${Date.now()}pic.jpg`; // New image name based on count
+      data.set('file', image, imageName);
+      setData({
+        question:Ques,
+        image:imageName,
+      });
+      const results = await UploadQuesImage(data);
       // handle the error
-      if (!res.ok) throw new Error(await res.text())
-      console.log(res);
+      console.log(results);
     } catch (e) {
       // Handle errors here
       console.error(e)
     }
   }
-  
+  const AddQues=async(e)=>{
+    e.preventDefault()
+    try {
+      const results = await addQues(Data);
+      console.log(results);
+    } catch (error) {
+      console.log(error);
+    }
+  }
   return (
-    <div>
+    <div className='flex justify-between w-full'>
       <form onSubmit={onSubmit}>
       <label htmlFor="image" className="upload-label">
         <div className="upload-icon">
@@ -51,7 +59,7 @@ const QuesImageUpload = () => {
               className='mt-2'
               onClick={(e)=>{
                 e.preventDefault();
-                setImage(null);
+                setTempImage(null)
               }}
               />
               <button type={'submit'}>
@@ -97,6 +105,23 @@ const QuesImageUpload = () => {
           margin: 10px auto;
         }
       `}</style>
+         <div>
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setQState(false);
+                  }}
+                  className="px-2 py-1 rounded border-none bg-zinc-100 text-black mr-2"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={AddQues}
+                  className="px-2 py-1 rounded border-none bg-black text-white"
+                >
+                  Add Question
+                </button>
+              </div>
     </div>
   );
 };

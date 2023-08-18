@@ -1,12 +1,12 @@
 import Hero from '../components/Hero';
 import Postform from '../components/PostForm';
-import Images from '../components/Images'
+import Questions from '../components/Questions'
 export default function Home() {
   return (
     <>
     <Hero/>
     <Postform/>
-    {/* <Images/>cla */}
+    <Questions/>
     </>
   )
 }

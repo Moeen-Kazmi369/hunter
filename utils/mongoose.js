@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 export const connectDB=async()=>{
-    mongoose.connect('mongodb+srv://firstTime:firstTime@cluster0.ibabf4i.mongodb.net/',{
+    mongoose.connect(process.env.MONGODB_URL,{
         dbName:'Questions',
     }).then(()=>{
         console.log('MongoDB is connected');

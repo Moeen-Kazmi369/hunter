@@ -5,7 +5,7 @@ const QSchema=new mongoose.Schema({
         required:true,
     },
     image:{
-        type:File,
+        type:String,
     }
 });
 mongoose.models={};

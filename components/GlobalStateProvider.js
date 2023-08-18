@@ -9,9 +9,12 @@ const GlobalStateProvider = ({children}) => {
   const [Qstate, setQState] = useState(false);
   const [Cstate, setCState] = useState(false);
   const [QuesImageUrl,setQuesImageUrl]=useState([]);
-  const [PosImageUrl,setPosImageUrl]=useState('');
+  const [PosImageUrl,setPosImageUrl]=useState([]);
+  const pushToMyQuesImageUrl = (item) => {
+    setQuesImageUrl((prevArray) => [...prevArray, item]);
+  };
   return (
-    <GlobalStateContext.Provider value={{ Qstate,setQState,Cstate,setCState,QuesImageUrl,setQuesImageUrl,PosImageUrl,setPosImageUrl }}>
+    <GlobalStateContext.Provider value={{ Qstate,setQState,Cstate,setCState,QuesImageUrl,pushToMyQuesImageUrl,PosImageUrl,setPosImageUrl }}>
       {children}
     </GlobalStateContext.Provider>
   );
