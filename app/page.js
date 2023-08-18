@@ -6,7 +6,7 @@ export default function Home() {
     <>
     <Hero/>
     <Postform/>
-    {/* <Images/> */}
+    {/* <Images/>cla */}
     </>
   )
 }
